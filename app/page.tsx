@@ -7,11 +7,11 @@ import {
 } from "recharts";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-const fmt = (n:number) =>
+const fmt = (n: number) =>
   new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN", maximumFractionDigits: 0 }).format(n);
-const fmtK = (n:number) =>
+const fmtK = (n: number) =>
   n >= 1_000_000 ? `$${(n / 1_000_000).toFixed(2)}M` : `$${(n / 1000).toFixed(0)}K`;
-const fmtPct = (n:number) => `${(n * 100).toFixed(1)}%`;
+const fmtPct = (n: number) => `${(n * 100).toFixed(1)}%`;
 
 /* ─── Tooltip ─────────────────────────────────────────── */
 const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?: any[]; label?: string }) => {
@@ -77,7 +77,7 @@ const ChartCard = ({ title, children }: { title: string; children: React.ReactNo
 );
 
 /* ─── Skeleton ─────────────────────────────────────────── */
-const Skeleton = ({ h = 300 }) => (
+const Skeleton = ({ h = 300 }: { h?: number }) => (
   <div style={{ height: h, borderRadius: 12, background: "linear-gradient(90deg, #1a1d2e 25%, #22253a 50%, #1a1d2e 75%)", backgroundSize: "200% 100%", animation: "shimmer 1.5s infinite" }} />
 );
 
@@ -125,13 +125,42 @@ const DateFilter = ({ startDate, endDate, onChange }: { startDate: string; endDa
   );
 };
 
+/* ─── Types ────────────────────────────────────────────── */
+interface Resumen {
+  total_ventas: number;
+  total_margen: number;
+  total_ordenes: number;
+  ticket_promedio: number;
+  rentabilidad: number;
+}
+
+interface VentaDia {
+  Fecha_Venta: string;
+  total_ventas: number;
+}
+
+interface MargenDia {
+  Fecha_Venta: string;
+  total_margen: number;
+}
+
+interface Producto {
+  Producto: string;
+  total_ventas: number;
+}
+
+interface Cliente {
+  Cliente: string;
+  total_compras: number;
+}
+
 /* ─── MAIN ─────────────────────────────────────────────── */
 export default function SalesDashboard() {
-  const [resumen, setResumen] = useState(null);
-  const [ventasDia, setVentasDia] = useState([]);
-  const [margenDia, setMargenDia] = useState([]);
-  const [topProductos, setTopProductos] = useState([]);
-  const [topClientes, setTopClientes] = useState([]);
+  const [resumen, setResumen] = useState<Resumen | null>(null);
+  const [ventasDia, setVentasDia] = useState<VentaDia[]>([]);
+  const [margenDia, setMargenDia] = useState<MargenDia[]>([]);
+  const [topProductos, setTopProductos] = useState<Producto[]>([]);
+  const [topClientes, setTopClientes] = useState<Cliente[]>([]);
   const [loading, setLoading] = useState(true);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
@@ -217,7 +246,6 @@ export default function SalesDashboard() {
           </div>
 
           <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-            {/* ✅ Filtro de fechas en el header — aplica a TODO */}
             <DateFilter startDate={startDate} endDate={endDate} onChange={handleDateChange} />
             <button
               onClick={fetchAll}
