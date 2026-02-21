@@ -6,16 +6,15 @@ import {
   Tooltip, ResponsiveContainer, Legend,
 } from "recharts";
 
-const API = "http://localhost:8000";
-
-const fmt = (n) =>
+const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const fmt = (n:number) =>
   new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN", maximumFractionDigits: 0 }).format(n);
 const fmtK = (n) =>
   n >= 1_000_000 ? `$${(n / 1_000_000).toFixed(2)}M` : `$${(n / 1000).toFixed(0)}K`;
-const fmtPct = (n) => `${(n * 100).toFixed(1)}%`;
+const fmtPct = (n:number) => `${(n * 100).toFixed(1)}%`;
 
 /* ─── Tooltip ─────────────────────────────────────────── */
-const CustomTooltip = ({ active, payload, label }) => {
+const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?: any[]; label?: string }) => {
   if (!active || !payload?.length) return null;
   return (
     <div style={{
@@ -33,7 +32,7 @@ const CustomTooltip = ({ active, payload, label }) => {
 };
 
 /* ─── KPI Card ─────────────────────────────────────────── */
-const KpiCard = ({ label, value, sub, accent, delay = 0 }) => (
+const KpiCard = ({ label, value, sub, accent, delay = 0 }: { label: string; value: string; sub?: string; accent: string; delay?: number }) => (
   <div style={{
     background: "linear-gradient(135deg, #13151f 0%, #1a1d2e 100%)",
     border: `1px solid ${accent}33`,
@@ -62,7 +61,7 @@ const KpiCard = ({ label, value, sub, accent, delay = 0 }) => (
 );
 
 /* ─── Chart Card ───────────────────────────────────────── */
-const ChartCard = ({ title, children }) => (
+const ChartCard = ({ title, children }: { title: string; children: React.ReactNode }) => (
   <div style={{
     background: "linear-gradient(135deg, #13151f 0%, #1a1d2e 100%)",
     border: "1px solid #2a2d3a",
@@ -83,7 +82,7 @@ const Skeleton = ({ h = 300 }) => (
 );
 
 /* ─── Bar Row ──────────────────────────────────────────── */
-const BarRow = ({ label, value, max, color, delay = 0 }) => {
+const BarRow = ({ label, value, max, color, delay = 0 }: { label: string; value: number; max: number; color: string; delay?: number }) => {
   const [width, setWidth] = useState(0);
   useEffect(() => {
     const t = setTimeout(() => setWidth((value / max) * 100), 100 + delay);
@@ -109,7 +108,7 @@ const BarRow = ({ label, value, max, color, delay = 0 }) => {
 };
 
 /* ─── Date Filter ──────────────────────────────────────── */
-const DateFilter = ({ startDate, endDate, onChange }) => {
+const DateFilter = ({ startDate, endDate, onChange }: { startDate: string; endDate: string; onChange: (type: string, val: string) => void }) => {
   const inputStyle = {
     background: "#0f1117", border: "1px solid #2a2d3a",
     borderRadius: 8, color: "#c8ccee",
