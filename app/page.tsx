@@ -168,7 +168,7 @@ export default function SalesDashboard() {
 
   useEffect(() => { fetchAll(); }, [fetchAll]);
 
-  const handleDateChange = (type, val) => {
+  const handleDateChange = (type: string, val: string) => {
     if (type === "start") setStartDate(val);
     else setEndDate(val);
   };
